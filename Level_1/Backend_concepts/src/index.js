@@ -31,8 +31,16 @@ app.delete("/", async (request, response )=>{
     return response.json("Projecto deletado")
 });
 
-app.put("/", (request, response )=>{    
-    return response.json({titulo:"Ja não nesta fase2"})
+app.put("/:id", (request, response )=>{  
+    const {id} = request.params
+    const { title} = request.body
+    const project ={
+       id,
+        title
+    }
+    projects.push(project)
+
+    return response.json(project)
 });
 
 app.listen(3333, ()=>{
