@@ -1,18 +1,18 @@
 const express = require("express")
-
+const {v4} = require("uuid")
 const app = express()
 app.use(express.json())
 
-const projects =[]
+let projects =[]
 
 app.get("/", (request, response )=>{    
     return response.json({projects})
 });
 
 app.post("/", (request, response )=>{  
-    const { id, title} = request.body
+    const { title} = request.body
     const project ={
-       id,
+       id:v4(),
         title
     }
     projects.push(project)
@@ -20,15 +20,15 @@ app.post("/", (request, response )=>{
     return response.json(project)
 });
 
-app.delete("/", async (request, response )=>{    
-    const {id} = request.headers
-    const projectExists = await projects.find(i =>i.id===id)
-    if(!projectExists){
-        return response.send("Project not found")
-    }
-
-     projects.splice(projectExists, 1)
-    return response.json("Projecto deletado")
+app.delete("/:id", async (request, response )=>{    
+    const {id} = request.params
+    const projectExists =  await projects.find(i=>i.id===id)
+    if(projectExists){  
+        projects=projects.filter(p=>p.id!==id);
+         return response.status(200).json(projectExists)
+    }  
+    
+    return response.status(401).json({message:"project not found"})
 });
 
 app.put("/:id", (request, response )=>{  
@@ -37,10 +37,15 @@ app.put("/:id", (request, response )=>{
     const project ={
        id,
         title
-    }
-    projects.push(project)
+    }    
+    const newProject =projects.findIndex(i =>i.id===id)
+    if(newProject>=0){
+        projects[newProject] = project
 
-    return response.json(project)
+        return response.json(project)
+    }
+    return response.status(401).json({message:"project not found"})
+ 
 });
 
 app.listen(3333, ()=>{

@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "uuidv4": "^6.2.12"
   },
   "scripts": {
-    "dev":"nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js"
   },
   "name": "Backend_concepts",
   "version": "1.0.0",
