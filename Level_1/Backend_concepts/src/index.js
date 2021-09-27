@@ -5,8 +5,13 @@ app.use(express.json())
 
 let projects =[]
 
-app.get("/", (request, response )=>{    
-    return response.json({projects})
+
+
+app.get("/projects", (request, response )=>{    
+    const {title}= request.query
+
+    const results = title ? projects.filter(p=>p.title.includes(title)) : projects
+    return response.json(results)
 });
 
 app.post("/", (request, response )=>{  
@@ -22,13 +27,14 @@ app.post("/", (request, response )=>{
 
 app.delete("/:id", async (request, response )=>{    
     const {id} = request.params
-    const projectExists =  await projects.find(i=>i.id===id)
-    if(projectExists){  
-        projects=projects.filter(p=>p.id!==id);
-         return response.status(200).json(projectExists)
+    const projectIndex =  projects.findIndex(i=>i.id===id)
+    if(projectIndex <0){  
+       
+        return response.status(401).json({message:"project not found"})
     }  
     
-    return response.status(401).json({message:"project not found"})
+    projects.splice(projectIndex, 1)
+    return response.status(204).send()
 });
 
 app.put("/:id", (request, response )=>{  
